@@ -1,0 +1,29 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h2>Objednávkový formulář - přihlášení</h2>
+
+<form method="post">
+    <div>
+        <label for="Username">Uživatelské jméno</label>
+        <input asp-for="Username" type="text" class="form-control"/>
+        <span asp-validation-for="Username" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="Password">Heslo</label>
+        <input asp-for="Password" type="password" class="form-control"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <br/>
+    <button type="submit" class="btn btn-primary">Přihlásit se</button>
+
+    @if (!ModelState.IsValid)
+    {
+        <div class="text-danger">Neplatné uživatelské jméno nebo heslo.</div>
+    }
+</form>

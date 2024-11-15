@@ -1,0 +1,142 @@
+﻿@page
+@model OrderFormModel
+@{
+    ViewData["Title"] = "Order Form";
+}
+
+<h2>Objednávkový formulář</h2>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success">
+        @Model.SuccessMessage
+    </div>
+}
+
+<form method="post">
+    <!-- Telefonní číslo -->
+    <div>
+        <label for="PhoneNumber">Telefonní číslo *</label>
+        <input asp-for="PhoneNumber" type="text" class="form-control"/>
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <!-- Osobní údaje ZK -->
+    <h3>Osobní údaje ZK</h3>
+    <div>
+        <label for="FullName">Jméno a příjmení *</label>
+        <input asp-for="FullName" type="text" class="form-control"/>
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="ZkType">Typ ZK *</label>
+        <select asp-for="ZkType" class="form-control" id="zkTypeSelect">
+            <option value="">Vyberte</option>
+            <option value="Fyzická osoba">Fyzická osoba</option>
+            <option value="Firma">Firma</option>
+        </select>
+        <span asp-validation-for="ZkType" class="text-danger"></span>
+    </div>
+
+    <!-- Datum narození (zobrazí se pouze při výběru Fyzická osoba) -->
+    <div id="birthDateField">
+        <label for="BirthDate">Datum narození *</label>
+        <input asp-for="BirthDate" type="date" class="form-control"/>
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <!-- IČO (zobrazí se pouze při výběru Firma) -->
+    <div id="icoField">
+        <label for="Ico">IČO *</label>
+        <input asp-for="Ico" type="text" class="form-control"/>
+        <span asp-validation-for="Ico" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="Email">Email</label>
+        <input asp-for="Email" type="email" class="form-control"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <!-- Adresy -->
+    <h3>Adresy</h3>
+    @{
+        string[] addressTypes = { "Adresa čištění", "Adresa trvalého bydliště", "Adresa korespondenční" };
+    }
+
+    @foreach (string address in addressTypes)
+    {
+        <h4>@address</h4>
+        <div>
+            <label>Ulice *</label>
+            <input asp-for="@Model.Address[address].Street" type="text" class="form-control"/>
+            <span asp-validation-for="@Model.Address[address].Street" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Číslo popisné *</label>
+            <input asp-for="@Model.Address[address].HouseNumber" type="text" class="form-control"/>
+            <span asp-validation-for="@Model.Address[address].HouseNumber" class="text-danger"></span>
+        </div>
+        <div>
+            <label>Obec *</label>
+            <input asp-for="@Model.Address[address].City" type="text" class="form-control"/>
+            <span asp-validation-for="@Model.Address[address].City" class="text-danger"></span>
+        </div>
+        <div>
+            <label>PSČ *</label>
+            <input asp-for="@Model.Address[address].ZipCode" type="text" class="form-control"/>
+            <span asp-validation-for="@Model.Address[address].ZipCode" class="text-danger"></span>
+        </div>
+    }
+
+    <!-- Počet komínů -->
+    <h3>Počet komínů</h3>
+    <div>
+        <label for="SolidFuelCount">Počet tuhých paliv *</label>
+        <input asp-for="SolidFuelCount" type="number" class="form-control"/>
+        <span asp-validation-for="SolidFuelCount" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="GasFuelCount">Počet plynných paliv *</label>
+        <input asp-for="GasFuelCount" type="number" class="form-control"/>
+        <span asp-validation-for="GasFuelCount" class="text-danger"></span>
+    </div>
+
+    <!-- Poznámka -->
+    <div>
+        <label for="Note">Poznámka</label>
+        <textarea asp-for="Note" class="form-control"></textarea>
+    </div>
+
+    <!-- Doporučitel -->
+    <div>
+        <label for="Referrer">Doporučitel *</label>
+        <input asp-for="Referrer" type="text" class="form-control"/>
+        <span asp-validation-for="Referrer" class="text-danger"></span>
+    </div>
+
+    <br/>
+    <button type="submit" class="btn btn-primary">Odeslat</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const zkTypeSelect = document.getElementById("zkTypeSelect");
+            const birthDateField = document.getElementById("birthDateField");
+            const icoField = document.getElementById("icoField");
+
+            function toggleFields() {
+                const selectedType = zkTypeSelect.value;
+                birthDateField.style.display = selectedType === "Fyzická osoba" ? "block" : "none";
+                icoField.style.display = selectedType === "Firma" ? "block" : "none";
+            }
+
+            zkTypeSelect.addEventListener("change", toggleFields);
+            toggleFields();
+        });
+    </script>
+}
