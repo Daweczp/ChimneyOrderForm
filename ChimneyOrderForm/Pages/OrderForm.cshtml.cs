@@ -109,6 +109,7 @@ public class OrderFormModel : PageModel
                 },
                 FirstName = FirstName,
                 LastName = LastName,
+                CompanyName = $"{FirstName} {LastName}",
                 RegNumber = BirthDate?.ToShortDateString() ?? Ico,
                 Notice =
                     $"Poèet tuhých paliv: {SolidFuelCount}, Poèet plynných paliv: {GasFuelCount}, Poznámka: {Note}",
