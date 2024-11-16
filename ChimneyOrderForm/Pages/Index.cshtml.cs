@@ -2,6 +2,8 @@ using ChimneyOrderForm.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+using System.Text.Json;
+
 namespace ChimneyOrderForm.Pages;
 
 public class IndexModel : PageModel
@@ -28,7 +30,11 @@ public class IndexModel : PageModel
 
         if (validUser != null)
         {
+            string validUserJson = JsonSerializer.Serialize(validUser);
+
             HttpContext.Session.SetString("IsLoggedIn", "true");
+            HttpContext.Session.SetString("ValidUser", validUserJson);
+
             return RedirectToPage("/OrderForm");
         }
 

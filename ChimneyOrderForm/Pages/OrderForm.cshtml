@@ -24,9 +24,15 @@
     <!-- Osobní údaje ZK -->
     <h3>Osobní údaje ZK</h3>
     <div>
-        <label for="FullName">Jméno a příjmení *</label>
-        <input asp-for="FullName" type="text" class="form-control"/>
-        <span asp-validation-for="FullName" class="text-danger"></span>
+        <label for="FullName">Jméno *</label>
+        <input asp-for="FirstName" type="text" class="form-control"/>
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="FullName">Příjmení *</label>
+        <input asp-for="LastName" type="text" class="form-control"/>
+        <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
 
     <div>
@@ -37,6 +43,14 @@
             <option value="Firma">Firma</option>
         </select>
         <span asp-validation-for="ZkType" class="text-danger"></span>
+    </div>
+
+    <div>
+        <label for="Priority">Priorita</label>
+        <select id="Priority" name="Priority" asp-for="Priority" class="form-control">
+            <option value="DEFAULT">Normální</option>
+            <option value="CRITICAL">Vysoká</option>
+        </select>
     </div>
 
     <!-- Datum narození (zobrazí se pouze při výběru Fyzická osoba) -->
@@ -62,7 +76,7 @@
     <!-- Adresy -->
     <h3>Adresy</h3>
     @{
-        string[] addressTypes = { "Adresa čištění", "Adresa trvalého bydliště", "Adresa korespondenční" };
+        string[] addressTypes = { "Adresa čištění" /*, "Adresa trvalého bydliště", "Adresa korespondenční" */ };
     }
 
     @foreach (string address in addressTypes)
@@ -111,11 +125,11 @@
     </div>
 
     <!-- Doporučitel -->
-    <div>
+@*     <div>
         <label for="Referrer">Doporučitel *</label>
         <input asp-for="Referrer" type="text" class="form-control"/>
         <span asp-validation-for="Referrer" class="text-danger"></span>
-    </div>
+    </div> *@
 
     <br/>
     <button type="submit" class="btn btn-primary">Odeslat</button>

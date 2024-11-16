@@ -1,10 +1,22 @@
+using ChimneyOrderForm.RaynetOpenApi;
+using ChimneyOrderForm.RaynetOpenApi.Model;
+using ChimneyOrderForm.RaynetOpenApi.Options;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
+using Microsoft.Extensions.Options;
 using System.ComponentModel.DataAnnotations;
 
 public class OrderFormModel : PageModel
 {
+    private readonly RaynetLeadClient _leadClient;
+    private readonly RaynetSettings _raynetSettings;
+
+    public OrderFormModel(RaynetLeadClient leadClient, IOptions<RaynetSettings> raynetSettings)
+    {
+        _leadClient = leadClient;
+        _raynetSettings = raynetSettings.Value!;
+    }
+
     [BindProperty]
     [Required]
     public Dictionary<string, AddressModel> Address { get; set; } = new();
@@ -17,7 +29,7 @@ public class OrderFormModel : PageModel
 
     [BindProperty]
     [Required]
-    public string FullName { get; set; }
+    public string FirstName { get; set; }
 
     [BindProperty]
     [Required]
@@ -27,6 +39,10 @@ public class OrderFormModel : PageModel
     public string? Ico { get; set; }
 
     [BindProperty]
+    [Required]
+    public string LastName { get; set; }
+
+    [BindProperty]
     public string? Note { get; set; }
 
     [BindProperty]
@@ -34,8 +50,11 @@ public class OrderFormModel : PageModel
     public string PhoneNumber { get; set; }
 
     [BindProperty]
-    [Required]
-    public string Referrer { get; set; }
+    public string Priority { get; set; }
+
+    //[BindProperty]
+    //[Required]
+    //public string Referrer { get; set; }
 
     [BindProperty]
     [Required]
@@ -58,9 +77,8 @@ public class OrderFormModel : PageModel
         return Page();
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        // Dynamická validace pro IÈO a Datum narození na základì hodnoty ZkType
         if (ZkType == "Firma" && string.IsNullOrWhiteSpace(Ico))
         {
             ModelState.AddModelError(nameof(Ico), "IÈO je povinné, pokud je vybrán typ ZK Firma.");
@@ -72,18 +90,35 @@ public class OrderFormModel : PageModel
 
         if (!ModelState.IsValid)
         {
-            // Pokud jsou chyby ve validaci, vrátíme formuláø zpìt s chybovými zprávami
             InicializaceAdres();
             return Page();
         }
 
         try
         {
-            // Zde mùžete pøidat kód pro ukládání dat do databáze nebo jiný proces uložení SaveOrderToDatabase();
+            AddressModel address = Address["Adresa èištìní"];
+            Lead l = new()
+            {
+                Priority = Priority,
+                Topic = _raynetSettings.LeadTitle,
+                Address = new Address
+                {
+                    City = address.City,
+                    Street = $"{address.Street} {address.HouseNumber}",
+                    ZipCode = address.ZipCode
+                },
+                FirstName = FirstName,
+                LastName = LastName,
+                RegNumber = BirthDate?.ToShortDateString() ?? Ico,
+                Notice =
+                    $"Telefon: {PhoneNumber}, Poèet tuhých paliv: {SolidFuelCount}, Poèet plynných paliv: {GasFuelCount}, Poznámka: {Note}"
+            };
 
-            SuccessMessage = "Formuláø byl úspìšnì odeslán.";
+            await _leadClient.CreateLead(l);
+
             ResetFormModel();
             InicializaceAdres();
+            SuccessMessage = "Formuláø byl úspìšnì odeslán.";
         }
         catch (Exception)
         {
@@ -96,14 +131,15 @@ public class OrderFormModel : PageModel
     private void InicializaceAdres()
     {
         Address["Adresa èištìní"] = new AddressModel();
-        Address["Adresa trvalého bydlištì"] = new AddressModel();
-        Address["Adresa korespondenèní"] = new AddressModel();
+        //Address["Adresa trvalého bydlištì"] = new AddressModel();
+        //Address["Adresa korespondenèní"] = new AddressModel();
     }
 
     private void ResetFormModel()
     {
         PhoneNumber = string.Empty;
-        FullName = string.Empty;
+        FirstName = string.Empty;
+        LastName = string.Empty;
         ZkType = string.Empty;
         BirthDate = null;
         Ico = string.Empty;
@@ -111,7 +147,7 @@ public class OrderFormModel : PageModel
         SolidFuelCount = 0;
         GasFuelCount = 0;
         Note = string.Empty;
-        Referrer = string.Empty;
+        //Referrer = string.Empty;
         Address = new Dictionary<string, AddressModel>();
     }
 
