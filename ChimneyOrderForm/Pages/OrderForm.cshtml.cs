@@ -111,7 +111,13 @@ public class OrderFormModel : PageModel
                 LastName = LastName,
                 RegNumber = BirthDate?.ToShortDateString() ?? Ico,
                 Notice =
-                    $"Telefon: {PhoneNumber}, Poèet tuhých paliv: {SolidFuelCount}, Poèet plynných paliv: {GasFuelCount}, Poznámka: {Note}"
+                    $"Poèet tuhých paliv: {SolidFuelCount}, Poèet plynných paliv: {GasFuelCount}, Poznámka: {Note}",
+
+                ContactInfo = new ContactInfo()
+                {
+                    Email = Email,
+                    Tel1 = PhoneNumber
+                }
             };
 
             await _leadClient.CreateLead(l);
