@@ -122,7 +122,7 @@ public class OrderFormModel : PageModel
                 }
             };
 
-            //await _leadClient.CreateLead(l);
+            await _leadClient.CreateLead(l);
 
             ResetFormModel();
             InicializaceAdres();
