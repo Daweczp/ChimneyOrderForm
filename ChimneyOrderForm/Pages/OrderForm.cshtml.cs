@@ -60,7 +60,8 @@ public class OrderFormModel : PageModel
     [Required]
     public int SolidFuelCount { get; set; }
 
-    public string SuccessMessage { get; set; }
+    [BindProperty(SupportsGet = true)]
+    public string? SuccessMessage { get; set; } = null;
 
     [BindProperty]
     [Required]
@@ -121,11 +122,13 @@ public class OrderFormModel : PageModel
                 }
             };
 
-            await _leadClient.CreateLead(l);
+            //await _leadClient.CreateLead(l);
 
             ResetFormModel();
             InicializaceAdres();
-            SuccessMessage = "Formuláø byl úspìšnì odeslán.";
+            //SuccessMessage = "Formuláø byl úspìšnì odeslán.";
+
+            return RedirectToPage("OrderForm", new { SuccessMessage = "Formuláø byl úspìšnì odeslán"});
         }
         catch (Exception)
         {
